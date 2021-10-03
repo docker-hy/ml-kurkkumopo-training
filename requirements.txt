@@ -5,5 +5,4 @@ Pillow
 requests
 opencv-python
 scikit-learn
-fiftyone
 tqdm
