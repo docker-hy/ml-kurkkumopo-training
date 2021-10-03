@@ -94,45 +94,43 @@ def start_train():
     train(X, y)
 
 def main():
-    try:
-        model = keras.models.load_model("./model/model")
+    if Path("model.model").exists():
         print(f"Model already exists at './model/model', exiting as there is nothing to do.")
         return
+    try:
+        cucumbers = pd.read_csv("./data/cucumber.csv")
+        mopeds = pd.read_csv('./data/moped.csv')
     except:
-        try:
-            cucumbers = pd.read_csv("./data/cucumber.csv")
-            mopeds = pd.read_csv('./data/moped.csv')
-        except:
-            print("Cant find 'data' volume with csv:s for image download ")
-            exit(1)
-        
-        if Path("./imgs/cucumbers2.csv").exists() and Path("./imgs/mopeds2.csv").exists() and Path("./imgs/processed").exists() and len(os.listdir("./imgs/processed")) > 50:
-            print("at least some images exist, lets continue")
-            start_train()
-            exit(0)
-        
-        if not Path("imgs/raw").exists():
-            os.makedirs("imgs/raw")
-        if not Path("imgs/processed").exists():
-            os.makedirs("imgs/processed")
-
-        p = Pool(cpu_count())
-
-        print("Gathering cucumbers...")
-        func = partial(get_images, "cucumber_")
-        cucumber_imgs = list(tqdm(p.imap(func, cucumbers["url"].sample(213)), desc="Gathering cucumbers...", unit="cucumbers", total=213))
-        print("Gathering mopeds...")
-        func = partial(get_images, "moped_")
-        moped_imgs = list(tqdm(p.imap(func, mopeds["url"].sample(213)), desc="Gathering mopeds...", unit="mopeds", total=213))
-        p.close()
-        p.join()
-        cucumbers = pd.DataFrame({"uri": cucumber_imgs, "y": 0})
-        cucumbers.to_csv("./imgs/cucumbers2.csv")
-        mopeds = pd.DataFrame({"uri": moped_imgs, "y": 1})
-        mopeds.to_csv("./imgs/mopeds2.csv")
-
+        print("Cant find 'data' volume with csv:s for image download ")
+        exit(1)
+    
+    if Path("./imgs/cucumbers2.csv").exists() and Path("./imgs/mopeds2.csv").exists() and Path("./imgs/processed").exists() and len(os.listdir("./imgs/processed")) > 50:
+        print("at least some images exist, lets continue")
         start_train()
         exit(0)
+    
+    if not Path("imgs/raw").exists():
+        os.makedirs("imgs/raw")
+    if not Path("imgs/processed").exists():
+        os.makedirs("imgs/processed")
+
+    p = Pool(cpu_count())
+
+    print("Gathering cucumbers...")
+    func = partial(get_images, "cucumber_")
+    cucumber_imgs = list(tqdm(p.imap(func, cucumbers["url"].sample(213)), desc="Gathering cucumbers...", unit="cucumbers", total=213))
+    print("Gathering mopeds...")
+    func = partial(get_images, "moped_")
+    moped_imgs = list(tqdm(p.imap(func, mopeds["url"].sample(213)), desc="Gathering mopeds...", unit="mopeds", total=213))
+    p.close()
+    p.join()
+    cucumbers = pd.DataFrame({"uri": cucumber_imgs, "y": 0})
+    cucumbers.to_csv("./imgs/cucumbers2.csv")
+    mopeds = pd.DataFrame({"uri": moped_imgs, "y": 1})
+    mopeds.to_csv("./imgs/mopeds2.csv")
+
+    start_train()
+    exit(0)
 
 if __name__ == "__main__":
    main()
