@@ -41,7 +41,6 @@ def train(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15)
     X_train = np.array([cv2.imread(uri) for uri in X_train["uri"]])
     X_test = np.array([cv2.imread(uri) for uri in X_test["uri"]])
-    print(X_train.shape, y_train.shape)
     
     model = create_model()
     model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
