@@ -47,7 +47,7 @@ def train(X, y):
     model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
     model.fit(x=X_train, y=y_train, batch_size=32, epochs=10, verbose=1)
     points = model.evaluate(X_test, y_test)
-    model.save('./model/model.h5' )
+    model.save('./model/model' )
     return
 
 def url_to_img(url, save_as=''):
@@ -95,8 +95,8 @@ def start_train():
 
 def main():
     try:
-        model = keras.models.load_model("./model/model.h5")
-        print(f"Model already exists at './model/model.h5', exiting as there is nothing to do.")
+        model = keras.models.load_model("./model/model")
+        print(f"Model already exists at './model/model', exiting as there is nothing to do.")
         return
     except:
         try:
